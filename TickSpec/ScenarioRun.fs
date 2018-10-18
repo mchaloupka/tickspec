@@ -146,13 +146,12 @@ let invokeStep
         | None,None,Some doc -> [|box doc|]
         | _,_,_ -> [||]
     let args = 
-        let stArgs = Array.append args tail
         let injectionArgs = 
             let pars = meth.GetParameters()
-            let a = stArgs.Length
-            Array.sub pars a (pars.Length - a)
+            let a = args.Length
+            Array.sub pars a (pars.Length - tail.Length - a)
             |> Array.map (fun (p:ParameterInfo) -> provider.GetService(p.ParameterType))
-        Array.append stArgs injectionArgs
+        Array.concat [|args; injectionArgs; tail|]
     invoke provider meth args
 
 /// Generate scenario execution function
